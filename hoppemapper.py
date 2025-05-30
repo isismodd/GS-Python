@@ -3,13 +3,16 @@ from datetime import datetime
 # variaveis
 REGIOES = ["Norte", "Nordeste", "Centro-Oeste", "Sudeste", "Sul"]
 ongs_parceiras = []
+resgates = []
 doacoes = []
+
 
 def mostrar_ajuda():
     print("\nCOMANDOS HoppeMapper DISPONÍVEIS:")
     print("  ong       - Gerenciar ONGs parceiras")
     print("  doar      - Fazer uma doação (você escolherá a região)")
     print("  relatorio - Ver doações por região/ONG")
+    print("  resgate   - registra um chamado de resgate")
     print("  sair      - Encerrar o app")
 
 def input_numero(mensagem):
@@ -110,6 +113,43 @@ def gerenciar_ongs():
         
         else:
             print("Subcomando inválido. Tente novamente.")
+
+# --- GERENCIAR CHAMADOS DE RESGATE ---
+def chamados_resgate():
+    print("\n📋 chamados de resgate")
+    print("Subcomandos: 'cadastrar', 'listar chamados', 'voltar'")
+    
+    while True:
+        subcomando = input("\n(resgate) > ").strip().lower()
+        
+        if subcomando == "voltar":
+            break
+        
+        elif subcomando == "cadastrar":
+            tipo = input("Tipo de resgate(Pessoa, animal doméstico ou animal exótico): ").strip()
+            if not tipo:
+                print("Erro: Tipo não pode ser vazio!")
+                continue
+            
+            resgate = {
+                "id": len(resgates) + 1,
+                "tipo": tipo,
+                "regioes": [],
+                "data_cadastro": datetime.now().strftime("%d/%m/%Y")
+            }
+            resgates.append(resgate)
+            print(f"✅ Chamado de resgate '{tipo}' aberto (ID: {resgate['id']})!")
+        
+        elif subcomando == "listar":
+            if not resgates:
+                print("Nenhum chamado aberto.")
+                continue
+            
+            for resgate in resgates:
+                regioes = ", ".join(resgate["regioes"]) if resgate["regioes"] else "Nenhuma"
+                print(f"\nID {resgate['id']}: {resgate['tipo']}")
+                print(f"  Regiões vinculadas: {regioes}")
+        
 
 # --- DOAÇÕES POR REGIÃO ---
 def registrar_doacao():
