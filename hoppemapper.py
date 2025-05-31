@@ -16,7 +16,7 @@ def mostrar_ajuda():
     print("  sair      - Encerrar o app")
 
 def input_numero(mensagem):
-    #Pede um número pro usuário e valida
+    # Pede um número pro usuário e valida
     while True:
         entrada = input(mensagem).strip()
         if entrada.isdigit():
@@ -25,7 +25,7 @@ def input_numero(mensagem):
         
 
 def input_decimal(mensagem):
-    #Pede um valor decimal e valida 
+    # Pede um valor decimal e valida 
     while True:
         entrada = input(mensagem).strip()
         valido = True
@@ -116,8 +116,8 @@ def gerenciar_ongs():
 
 # --- GERENCIAR CHAMADOS DE RESGATE ---
 def chamados_resgate():
-    print("\n📋 chamados de resgate")
-    print("Subcomandos: 'cadastrar', 'listar chamados', 'voltar'")
+    print("\n📋 CHAMADOS DE RESGATE")
+    print("Subcomandos: 'cadastrar', 'listar', 'voltar'")
     
     while True:
         subcomando = input("\n(resgate) > ").strip().lower()
@@ -126,19 +126,30 @@ def chamados_resgate():
             break
         
         elif subcomando == "cadastrar":
-            tipo = input("Tipo de resgate(Pessoa, animal doméstico ou animal exótico): ").strip()
+            tipo = input("Tipo de resgate (Pessoa, animal doméstico ou animal exótico): ").strip()
             if not tipo:
                 print("Erro: Tipo não pode ser vazio!")
                 continue
             
+            print("\nRegiões disponíveis:")
+            for i, regiao in enumerate(REGIOES, 1):
+                print(f"{i}. {regiao}")
+            
+            regiao_num = input_numero("\nNúmero da região do resgate: ") - 1
+            if not (0 <= regiao_num < len(REGIOES)):
+                print("Número inválido!")
+                continue
+                
+            regiao = REGIOES[regiao_num]
+            
             resgate = {
                 "id": len(resgates) + 1,
                 "tipo": tipo,
-                "regioes": [],
+                "regiao": regiao,
                 "data_cadastro": datetime.now().strftime("%d/%m/%Y")
             }
             resgates.append(resgate)
-            print(f"✅ Chamado de resgate '{tipo}' aberto (ID: {resgate['id']})!")
+            print(f"✅ Chamado de resgate '{tipo}' aberto para região {regiao} (ID: {resgate['id']})!")
         
         elif subcomando == "listar":
             if not resgates:
@@ -146,10 +157,12 @@ def chamados_resgate():
                 continue
             
             for resgate in resgates:
-                regioes = ", ".join(resgate["regioes"]) if resgate["regioes"] else "Nenhuma"
                 print(f"\nID {resgate['id']}: {resgate['tipo']}")
-                print(f"  Regiões vinculadas: {regioes}")
+                print(f"  Região: {resgate['regiao']}")
+                print(f"  Data: {resgate['data_cadastro']}")
         
+        else:
+            print("Subcomando inválido. Tente novamente.")
 
 # --- DOAÇÕES POR REGIÃO ---
 def registrar_doacao():
@@ -172,7 +185,7 @@ def registrar_doacao():
     ongs_na_regiao = [o for o in ongs_parceiras if regiao in o["regioes"]]
     
     if not ongs_na_regiao:
-        print(f"Nenhuma ONG atende a região {regiao} ainda.")
+        print(f"\nNenhuma ONG atende a região {regiao} ainda.")
         return
     
     print(f"\nONGs em {regiao}:")
@@ -224,13 +237,15 @@ while rodando:
     
     if comando == "sair":
         print("\nObrigado por usar o HopeMapper! Juntos fazemos a diferença! 🌍\n")
-        rodando = False  # Substitui o sys.exit()
+        rodando = False
     elif comando == "ong":
         gerenciar_ongs()
     elif comando == "doar":
         registrar_doacao()
     elif comando == "relatorio":
         mostrar_relatorio()
+    elif comando == "resgate":
+        chamados_resgate()
     elif comando == "ajuda":
         mostrar_ajuda()
     else:
